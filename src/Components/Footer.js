@@ -6,7 +6,7 @@ class Footer extends Component {
 	render() {
 		return (
 			<div className="App-footer">
-	        	Footer
+	        	&copy; 2019 Jacob Humrich
 	        </div>
 	    );
 	}
