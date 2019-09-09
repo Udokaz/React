@@ -6,11 +6,13 @@ import Footer from './Components/Footer';
 class App extends Component {
 
   render() {
+    console.log("props", this.props)
+    const { sub, loggedIn, component/*, exp, cid*/ } = this.props;
     return (
       <div className="App">
-        <Header />
+        <Header sub={sub} loggedIn={loggedIn} />
         <div className="App-body">
-          {this.props.component}
+          {component}
         </div>
         <Footer />
       </div>

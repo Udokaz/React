@@ -1,18 +1,29 @@
-const listItemURL = 'http://localhost:8080/api/listitems';
+const listItemURL = '/api/listitems';
+const JSCookie = require('js-cookie');
+
+const headers = new Headers({ 
+	"Authorization": "Bearer " + JSCookie.get("user")	
+})
 
 export function getAllItems() {
-	return fetch(listItemURL)
-		.then(response => { 
-			if(response.ok){
-				return response.json();
-			} else {
-				throw new Error("Error fetching all items.");
-			}
-		});
+	return fetch(listItemURL, {
+		headers
+	}).then(response => { 
+		console.log("response", response)
+		if(response.ok){
+			console.log("ok")
+			return response.json();
+		} else {
+			console.log("bad")
+			throw new Error("Error fetching all items.");
+		}
+	}).catch( error => console.log("error", error));
 }
 
 export function getOneItem(id) {
-	return fetch(listItemURL + "/" + id)
+	return fetch(listItemURL + "/" + id, {
+		headers
+	})
 		.then(response => {
 			if(response.ok){
 				return response.json();
@@ -27,6 +38,7 @@ export function saveNewItem(newListItem) {
 	return fetch(listItemURL, {
 		method: 'POST',
 		headers: {
+			"Authorization": "Bearer " + JSCookie.get("user"),
 			Accept: "application/json", "Content-Type": "application/json"
 		},
 		body: JSON.stringify({
@@ -51,6 +63,7 @@ export function updateItem(newListItem) {
 	return fetch(listItemURL + "/" + newListItem.id, {
 		method: 'PUT',
 		headers: {
+			"Authorization": "Bearer " + JSCookie.get("user"),
 			Accept: "application/json", "Content-Type": "application/json"
 		},
 		body: JSON.stringify({
@@ -73,6 +86,7 @@ export function deleteItem(id) {
 	return fetch(listItemURL + "/" + id, {
 		method: 'DELETE',
 		headers: {
+			"Authorization": "Bearer " + JSCookie.get("user"),
 			Accept: "application/json", "Content-Type": "application/json"
 		}
 	})

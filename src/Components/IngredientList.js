@@ -3,6 +3,8 @@ import '../App.css';
 import IngredientInput from './IngredientInput';
 import {getAllItems, updateItem} from '../Controllers/list-controller';
 import history from '../history';
+import { decodeJWT } from '../Authenticate/OktaAuth';
+import NotLoggedInError from './NotLoggedInError';
 
 class IngredientList extends Component {
 	constructor(props){
@@ -14,14 +16,22 @@ class IngredientList extends Component {
 		};
 	}
 
-	componentDidMount() {
-		this.setState({isLoading: true});
-		getAllItems()
-		.then(data => this.setState({ListItems: data._embedded.listItemList, isLoading: false}))
-		.catch(error => this.setState({error, isLoading: false }))
-	}
-
 	avalibleListIngredients = []; 
+	
+	componentDidMount() {
+		if(!this.props.loggedIn)
+			return;
+		this.setState({isLoading: true});
+		
+		let decoded = decodeJWT();
+		if(decoded.hasOwnProperty('sub')){
+			getAllItems()
+			.then(data => this.setState({ListItems: data._embedded.listItemList, isLoading: false}))
+			.catch(error => this.setState({error, isLoading: false }))
+		}else{
+			this.setState({isLoading: false});
+		}
+	}
 
 	updateItemInput = updatedItem => {
 		this.setState({ ...this.state.ListItems, updatedItem })
@@ -69,8 +79,13 @@ class IngredientList extends Component {
 			return <p>Loading...</p>;
 		}
 
-		if(error){
-			return <p>{error.message}</p>;
+		if(this.props.loggedIn){
+			if(error) 
+				return <p>{error.message}</p>;
+		} else {
+			return (
+				<NotLoggedInError />
+			)
 		}
 
 		for(let i = 0; i < ListItems.length; i++){
